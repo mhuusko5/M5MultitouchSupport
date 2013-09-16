@@ -7,6 +7,7 @@
 @interface MultitouchManager : NSObject {
     NSMutableArray *multitouchListeners;
     BOOL forwardingMultitouchEventsToListeners;
+    NSMutableArray *activeMultitouchDevices;
 }
 
 - (void)startForwardingMultitouchEventsToListeners;

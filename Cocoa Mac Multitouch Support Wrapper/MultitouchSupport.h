@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	float x;
 	float y;
@@ -9,27 +13,37 @@ typedef struct {
 } MTVector;
 
 typedef struct {
-    int frame; // the current frame
-    double timestamp; // event timestamp
-	int identifier; // identifier guaranteed unique for life of touch per device
-	int state; //the current state (not sure what the values mean)
+    int frame; 
+    double timestamp; 
+	int identifier; 
+	int state; 
 	int unknown1; 
 	int unknown2;
-	MTVector normalized; //the normalized position and vector of the touch (0,0 to 1,1)
-	float size; //the size of the touch (the area of your finger being tracked)
+	MTVector normalized; 
+	float size; 
 	int unknown3;
-	float angle; //the angle of the touch            -|
-	float majorAxis; //the major axis of the touch   -|-- an ellipsoid. you can track the angle of each finger!
-	float minorAxis; //the minor axis of the touch   -|
+	float angle;          
+	float majorAxis;
+	float minorAxis;
 	MTVector unknown4;
 	int unknown5[2];
 	float unknown6;
 } MTTouch;
 
-typedef void *MTDeviceRef; //a reference pointer for the multitouch device
-typedef int (*MTContactCallbackFunction)(int, MTTouch*, int, double, int); //the prototype for the callback function
+typedef void *MTDeviceRef; 
+typedef int (*MTContactCallbackFunction)(int, MTTouch*, int, double, int); 
 
-MTDeviceRef MTDeviceCreateDefault(); //returns a pointer to the default device (the trackpad)
-CFMutableArrayRef MTDeviceCreateList(void); //returns a CFMutableArrayRef array of all multitouch devices
-void* MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction); //registers a device's frame callback to your callback function
-void MTDeviceStart(MTDeviceRef, int); //start sending events
+MTDeviceRef MTDeviceCreateDefault(); 
+CFMutableArrayRef MTDeviceCreateList(void);
+
+void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction); 
+void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
+
+void MTDeviceStart(MTDeviceRef, int);
+void MTDeviceStop(MTDeviceRef);
+
+void MTDeviceRelease(MTDeviceRef);
+
+#ifdef __cplusplus
+}
+#endif

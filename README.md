@@ -8,3 +8,5 @@ Listening to system wide multitouch events from all devices, in a Obj-C manner i
 \#import "MultitouchManager.h"
  
 [[MultitouchManager sharedMultitouchManager] addMultitouchListenerWithTarget:self callback:@selector(doSomethingWithMultitouchEvent:) andThread:nil];
+
+Sent to the designated method is a "MultitouchEvent" with a Device ID, Frame ID, Timestamp, and array of "MultitouchTouch"s, which have a unique (per device) ID, State, normalized X and Y location (from 0 to 1), Angle, Size, X Velocity and Y Velocity.

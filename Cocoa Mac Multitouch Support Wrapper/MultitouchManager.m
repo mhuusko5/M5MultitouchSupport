@@ -18,14 +18,21 @@
 - (void)startForwardingMultitouchEventsToListeners
 {
     if ([[NSThread currentThread] isMainThread]) {
-        NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
-        for (id device in mtDevices) {
-            MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
-            MTRegisterContactFrameCallback(mtDevice, mtEventHandler);
-            MTDeviceStart(mtDevice, 0);
+        if (!forwardingMultitouchEventsToListeners) {
+            if (!activeMultitouchDevices) {
+                activeMultitouchDevices = [NSMutableArray array];
+            }
+            
+            NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
+            for (id device in mtDevices) {
+                MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
+                MTRegisterContactFrameCallback(mtDevice, mtEventHandler);
+                MTDeviceStart(mtDevice, 0);
+                [activeMultitouchDevices addObject: device];
+            }
+            
+            forwardingMultitouchEventsToListeners = YES;
         }
-        
-        forwardingMultitouchEventsToListeners = YES;
     } else {
         [self performSelectorOnMainThread:@selector(startForwardingMultitouchEventsToListeners) withObject:nil waitUntilDone:NO];
     }
@@ -35,9 +42,19 @@
 - (void)stopForwardingMultitouchEventsToListeners
 {
     if ([[NSThread currentThread] isMainThread]) {
-        //TODO: Unregister multitouch devices
-        
-        forwardingMultitouchEventsToListeners = NO;
+        if (forwardingMultitouchEventsToListeners) {
+            for (int i = (int)activeMultitouchDevices.count; i > 0; i--) {
+                id device = [activeMultitouchDevices objectAtIndex:i];
+                [activeMultitouchDevices removeObject:device];
+                
+                MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
+                MTUnregisterContactFrameCallback(mtDevice, mtEventHandler);
+                MTDeviceStop(mtDevice);
+                MTDeviceRelease(mtDevice);
+            }
+            
+            forwardingMultitouchEventsToListeners = NO;
+        }
     } else {
         [self performSelectorOnMainThread:@selector(stopForwardingMultitouchEventsToListeners) withObject:nil waitUntilDone:NO];
     }
@@ -87,17 +104,6 @@ static int mtEventHandler(int mtEventDeviceId, MTTouch* mtEventTouches, int mtEv
 }
 
 static MultitouchManager *sharedMultitouchManager = nil;
-static BOOL sharedMultitouchManagerInitialized = NO;
-
-- (id)init
-{
-    if (!sharedMultitouchManagerInitialized) {
-        sharedMultitouchManagerInitialized = YES;
-        return self = [super init];
-    } else {
-        return nil;
-    }
-}
 
 + (void)initialize {
     if (!sharedMultitouchManager && self == [MultitouchManager class]) {
