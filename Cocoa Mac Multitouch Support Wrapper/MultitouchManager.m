@@ -15,10 +15,6 @@
 {
     if ([[NSThread currentThread] isMainThread]) {
         if (!forwardingMultitouchEventsToListeners) {
-            if (!multitouchDevices) {
-                multitouchDevices = [NSMutableArray array];
-            }
-            
             NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
             for (id device in mtDevices) {
                 MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
