@@ -6,12 +6,10 @@
 
 @interface MultitouchManager : NSObject {
     NSMutableArray *multitouchListeners;
+    NSMutableArray *multitouchDevices;
     BOOL forwardingMultitouchEventsToListeners;
-    NSMutableArray *activeMultitouchDevices;
 }
 
-- (void)startForwardingMultitouchEventsToListeners;
-- (void)stopForwardingMultitouchEventsToListeners;
 - (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback;
 - (void)addMultitouchListenerWithTarget:(id)target callback:(SEL)callback andThread:(NSThread *)thread;
 + (MultitouchManager *)sharedMultitouchManager;

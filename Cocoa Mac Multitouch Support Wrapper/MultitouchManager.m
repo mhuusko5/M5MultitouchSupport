@@ -4,14 +4,10 @@
 
 - (void)handleMultitouchEvent:(MultitouchEvent *)event
 {
-    if ([[NSThread currentThread] isMainThread]) {
-        if (forwardingMultitouchEventsToListeners) {
-            for (MultitouchListener *multitouchListenerToForwardEvent in multitouchListeners) {
-                [multitouchListenerToForwardEvent sendMultitouchEvent:event];
-            }
+    if (forwardingMultitouchEventsToListeners) {
+        for (MultitouchListener *multitouchListenerToForwardEvent in multitouchListeners) {
+            [multitouchListenerToForwardEvent sendMultitouchEvent:event];
         }
-    } else {
-        [self performSelectorOnMainThread:@selector(handleMultitouchEvent) withObject:event waitUntilDone:NO];
     }
 }
 
@@ -19,8 +15,8 @@
 {
     if ([[NSThread currentThread] isMainThread]) {
         if (!forwardingMultitouchEventsToListeners) {
-            if (!activeMultitouchDevices) {
-                activeMultitouchDevices = [NSMutableArray array];
+            if (!multitouchDevices) {
+                multitouchDevices = [NSMutableArray array];
             }
             
             NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
@@ -28,7 +24,7 @@
                 MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
                 MTRegisterContactFrameCallback(mtDevice, mtEventHandler);
                 MTDeviceStart(mtDevice, 0);
-                [activeMultitouchDevices addObject: device];
+                [multitouchDevices addObject: device];
             }
             
             forwardingMultitouchEventsToListeners = YES;
@@ -38,19 +34,23 @@
     }
 }
 
-//TODO: Should probably be called before sleeping of laptop, and then the above on wake
 - (void)stopForwardingMultitouchEventsToListeners
 {
     if ([[NSThread currentThread] isMainThread]) {
         if (forwardingMultitouchEventsToListeners) {
-            for (int i = (int)activeMultitouchDevices.count; i > 0; i--) {
-                id device = [activeMultitouchDevices objectAtIndex:i];
-                [activeMultitouchDevices removeObject:device];
+            for (int i = (int)multitouchDevices.count; i > 0; i--) {
+                id device = [multitouchDevices objectAtIndex:i];
+                [multitouchDevices removeObject:device];
                 
-                MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
-                MTUnregisterContactFrameCallback(mtDevice, mtEventHandler);
-                MTDeviceStop(mtDevice);
-                MTDeviceRelease(mtDevice);
+                @try {
+                    MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
+                    MTUnregisterContactFrameCallback(mtDevice, mtEventHandler);
+                    MTDeviceStop(mtDevice);
+                    MTDeviceRelease(mtDevice);
+                }
+                @catch (NSException *exception) {
+                    NSLog(@"%@", [exception description]);
+                }
             }
             
             forwardingMultitouchEventsToListeners = NO;
@@ -62,10 +62,6 @@
 
 - (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback
 {
-    if (!multitouchListeners || multitouchListeners.count < 1) {
-        return;
-    }
-    
     for (MultitouchListener *multitouchListerToRemove in multitouchListeners) {
         if ([multitouchListerToRemove.target isEqual:target] && (!callback || multitouchListerToRemove.callback == callback)) {
             [multitouchListeners removeObject:multitouchListerToRemove];
@@ -75,15 +71,9 @@
 
 - (void)addMultitouchListenerWithTarget:(id)target callback:(SEL)callback andThread:(NSThread *)thread
 {
-    if (!multitouchListeners) {
-        multitouchListeners = [NSMutableArray array];
-    }
-    
     [multitouchListeners addObject:[[MultitouchListener alloc] initWithTarget:target callback:callback andThread:thread]];
     
-    if (!forwardingMultitouchEventsToListeners) {
-        [self startForwardingMultitouchEventsToListeners];
-    }
+    [self startForwardingMultitouchEventsToListeners];
 }
 
 static int mtEventHandler(int mtEventDeviceId, MTTouch* mtEventTouches, int mtEventTouchesNum, double mtEventTimestamp, int mtEventFrameId)
@@ -101,6 +91,28 @@ static int mtEventHandler(int mtEventDeviceId, MTTouch* mtEventTouches, int mtEv
     [[MultitouchManager sharedMultitouchManager] handleMultitouchEvent:multitouchEvent];
     
     return 0;
+}
+
+- (void)restartMultitouchEventForwardingAfterWake:(NSNotification *)wakeNotification
+{
+    if ([[NSThread currentThread] isMainThread]) {
+        [self stopForwardingMultitouchEventsToListeners];
+        [self startForwardingMultitouchEventsToListeners];
+    } else {
+        [self performSelectorOnMainThread:@selector(restartMultitouchEventForwardingAfterWake:) withObject:wakeNotification waitUntilDone:NO];
+    }
+}
+
+- (id)init
+{
+    self = [super init];
+    
+    multitouchListeners = [NSMutableArray array];
+    multitouchDevices = [NSMutableArray array];
+    
+    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(receivedWakeNote:) name:NSWorkspaceDidWakeNotification object:nil];
+    
+    return self;
 }
 
 static MultitouchManager *sharedMultitouchManager = nil;
