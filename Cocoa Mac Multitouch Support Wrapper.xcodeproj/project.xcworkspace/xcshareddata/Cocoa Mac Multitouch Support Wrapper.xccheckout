@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>35A90839-A812-4D1E-9C9F-7D9EB010A7D8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Cocoa Mac Multitouch Support Wrapper</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F1D42F3E-9015-412B-8092-CCE971D1ABE1</key>
+		<string>https://github.com/mhuusko5/Cocoa-Mac-Multitouch-Support-Wrapper.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Cocoa Mac Multitouch Support Wrapper.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F1D42F3E-9015-412B-8092-CCE971D1ABE1</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/mhuusko5/Cocoa-Mac-Multitouch-Support-Wrapper.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F1D42F3E-9015-412B-8092-CCE971D1ABE1</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F1D42F3E-9015-412B-8092-CCE971D1ABE1</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Cocoa-Mac-Multitouch-Support-Wrapper</string>
+		</dict>
+	</array>
+</dict>
+</plist>
