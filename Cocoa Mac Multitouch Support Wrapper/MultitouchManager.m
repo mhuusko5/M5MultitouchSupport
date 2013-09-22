@@ -32,7 +32,7 @@
 - (void)stopForwardingMultitouchEventsToListeners {
 	if ([[NSThread currentThread] isMainThread]) {
 		if (forwardingMultitouchEventsToListeners) {
-			for (int i = (int)multitouchDevices.count; i > 0; i--) {
+			for (int i = (int)multitouchDevices.count - 1; i > 0; i--) {
 				id device = [multitouchDevices objectAtIndex:i];
 				[multitouchDevices removeObject:device];
                 
@@ -102,7 +102,7 @@ static int mtEventHandler(int mtEventDeviceId, MTTouch *mtEventTouches, int mtEv
 	multitouchListeners = [NSMutableArray array];
 	multitouchDevices = [NSMutableArray array];
     
-	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(receivedWakeNote:) name:NSWorkspaceDidWakeNotification object:nil];
+	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self selector:@selector(restartMultitouchEventForwardingAfterWake:) name:NSWorkspaceDidWakeNotification object:nil];
     
 	return self;
 }
