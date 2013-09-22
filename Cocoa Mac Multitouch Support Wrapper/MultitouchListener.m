@@ -4,24 +4,22 @@
 
 @synthesize target, callback, thread;
 
-- (id)initWithTarget:(id)_target callback:(SEL)_callback andThread:(NSThread *)_thread
-{
-    self = [super init];
+- (id)initWithTarget:(id)_target callback:(SEL)_callback andThread:(NSThread *)_thread {
+	self = [super init];
     
-    if (!_thread) {
-        _thread = [NSThread currentThread];
-    }
+	if (!_thread) {
+		_thread = [NSThread currentThread];
+	}
     
-    target = _target;
-    callback = _callback;
-    thread = _thread;
+	target = _target;
+	callback = _callback;
+	thread = _thread;
     
-    return self;
+	return self;
 }
 
-- (void)sendMultitouchEvent:(MultitouchEvent *)event
-{
-    [target performSelector:callback onThread:thread withObject:event waitUntilDone:NO];
+- (void)sendMultitouchEvent:(MultitouchEvent *)event {
+	[target performSelector:callback onThread:thread withObject:event waitUntilDone:NO];
 }
 
 @end

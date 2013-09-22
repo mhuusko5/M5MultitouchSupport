@@ -2,9 +2,9 @@
 #import "MultitouchEvent.h"
 
 @interface MultitouchListener : NSObject {
-    id target;
-    SEL callback;
-    NSThread *thread;
+	id target;
+	SEL callback;
+	NSThread *thread;
 }
 @property id target;
 @property SEL callback;

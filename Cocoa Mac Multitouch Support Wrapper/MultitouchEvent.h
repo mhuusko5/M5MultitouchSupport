@@ -2,9 +2,9 @@
 #import "MultitouchTouch.h"
 
 @interface MultitouchEvent : NSObject {
-    NSNumber *deviceIdentifier, *frameIdentifier;
-    double timestamp;
-    NSArray *touches;
+	NSNumber *deviceIdentifier, *frameIdentifier;
+	double timestamp;
+	NSArray *touches;
 }
 @property NSNumber *deviceIdentifier;
 @property NSNumber *frameIdentifier;

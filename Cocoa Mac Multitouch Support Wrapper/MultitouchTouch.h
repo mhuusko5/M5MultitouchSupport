@@ -3,10 +3,10 @@
 @class MultitouchEvent;
 
 @interface MultitouchTouch : NSObject {
-    MultitouchEvent *event;
-    NSNumber *identifier;
-    int state;
-    float x, y, minorAxis, majorAxis, angle, size, velX, velY;
+	MultitouchEvent *event;
+	NSNumber *identifier;
+	int state;
+	float x, y, minorAxis, majorAxis, angle, size, velX, velY;
 }
 @property MultitouchEvent *event;
 @property NSNumber *identifier;

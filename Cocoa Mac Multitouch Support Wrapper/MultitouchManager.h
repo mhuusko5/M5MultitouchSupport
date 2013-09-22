@@ -5,9 +5,9 @@
 #import "MultitouchListener.h"
 
 @interface MultitouchManager : NSObject {
-    NSMutableArray *multitouchListeners;
-    NSMutableArray *multitouchDevices;
-    BOOL forwardingMultitouchEventsToListeners;
+	NSMutableArray *multitouchListeners;
+	NSMutableArray *multitouchDevices;
+	BOOL forwardingMultitouchEventsToListeners;
 }
 
 - (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback;
@@ -15,5 +15,3 @@
 + (MultitouchManager *)sharedMultitouchManager;
 
 @end
-
-
