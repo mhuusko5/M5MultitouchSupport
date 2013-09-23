@@ -10,6 +10,7 @@
 	BOOL forwardingMultitouchEventsToListeners;
 }
 
+- (void)stopForwardingMultitouchEventsToListeners;
 - (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback;
 - (void)addMultitouchListenerWithTarget:(id)target callback:(SEL)callback andThread:(NSThread *)thread;
 + (MultitouchManager *)sharedMultitouchManager;
