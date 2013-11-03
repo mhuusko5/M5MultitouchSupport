@@ -71,7 +71,7 @@
 	}
 }
 
-- (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback {
+- (void)removeMultitouchListenersWithTarget:(id)target andCallback:(SEL)callback {
 	int multitouchListenerCount = (int)multitouchListeners.count;
 	while (multitouchListenerCount-- > 0) {
 		MultitouchListener *multitouchListenerToRemove = [multitouchListeners objectAtIndex:multitouchListenerCount];
@@ -82,6 +82,8 @@
 }
 
 - (void)addMultitouchListenerWithTarget:(id)target callback:(SEL)callback andThread:(NSThread *)thread {
+    [self removeMultitouchListenersWithTarget:target andCallback:callback];
+    
 	[multitouchListeners addObject:[[MultitouchListener alloc] initWithTarget:target callback:callback andThread:thread]];
     
 	[self startForwardingMultitouchEventsToListeners];
