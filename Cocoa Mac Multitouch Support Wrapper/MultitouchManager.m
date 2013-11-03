@@ -6,8 +6,13 @@
 
 - (void)handleMultitouchEvent:(MultitouchEvent *)event {
 	if (forwardingMultitouchEventsToListeners) {
-		for (MultitouchListener *multitouchListenerToForwardEvent in multitouchListeners) {
-			[multitouchListenerToForwardEvent sendMultitouchEvent:event];
+		for (int i = (int)multitouchListeners.count; i > 0; i--) {
+			@try {
+				[[multitouchListeners objectAtIndex:i] sendMultitouchEvent:event];
+			}
+			@catch (NSException *exception)
+			{
+			}
 		}
 	}
 }
@@ -17,12 +22,19 @@
 		if (!forwardingMultitouchEventsToListeners && [MultitouchManager systemIsMultitouchCapable]) {
 			NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
             
-			for (id device in mtDevices) {
-				MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
-				MTRegisterContactFrameCallback(mtDevice, mtEventHandler);
-				MTDeviceStart(mtDevice, 0);
+			for (int i = (int)mtDevices.count; i > 0; i--) {
+				id device = [mtDevices objectAtIndex:i];
                 
-				[multitouchDevices addObject:device];
+				@try {
+					MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
+					MTRegisterContactFrameCallback(mtDevice, mtEventHandler);
+					MTDeviceStart(mtDevice, 0);
+                    
+					[multitouchDevices addObject:device];
+				}
+				@catch (NSException *exception)
+				{
+				}
 			}
             
 			forwardingMultitouchEventsToListeners = YES;
@@ -38,7 +50,6 @@
 		if (forwardingMultitouchEventsToListeners) {
 			for (int i = (int)multitouchDevices.count - 1; i > 0; i--) {
 				id device = [multitouchDevices objectAtIndex:i];
-				[multitouchDevices removeObject:device];
                 
 				@try {
 					MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
@@ -49,6 +60,8 @@
 				@catch (NSException *exception)
 				{
 				}
+                
+				[multitouchDevices removeObject:device];
 			}
             
 			forwardingMultitouchEventsToListeners = NO;
@@ -60,9 +73,8 @@
 }
 
 - (void)removeMultitouchListersWithTarget:(id)target andCallback:(SEL)callback {
-	int multitouchListenerCount = (int)multitouchListeners.count;
-	while (multitouchListenerCount-- > 0) {
-		MultitouchListener *multitouchListenerToRemove = [multitouchListeners objectAtIndex:multitouchListenerCount];
+	for (int i = (int)multitouchListeners.count; i > 0; i--) {
+		MultitouchListener *multitouchListenerToRemove = [multitouchListeners objectAtIndex:i];
 		if ([multitouchListenerToRemove.target isEqual:target] && (!callback || multitouchListenerToRemove.callback == callback)) {
 			[multitouchListeners removeObject:multitouchListenerToRemove];
 		}
