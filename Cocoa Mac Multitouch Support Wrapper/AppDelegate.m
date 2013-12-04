@@ -4,6 +4,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	[[MultitouchManager sharedMultitouchManager] addMultitouchListenerWithTarget:self callback:@selector(doSomethingWithMultitouchEvent:) andThread:nil];
+
+	NSLog(@"System is%@ multitouch capable.", [MultitouchManager systemIsMultitouchCapable] ? @"" : @" not");
 }
 
 - (void)doSomethingWithMultitouchEvent:(MultitouchEvent *)event {
