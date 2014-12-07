@@ -8,7 +8,7 @@
 
 #import "M5MultitouchListener.h"
 
-#import "M5MultitouchEvent.h"
+#import "M5MultitouchEventInternal.h"
 
 @interface M5MultitouchListener ()
 

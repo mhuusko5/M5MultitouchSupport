@@ -14,17 +14,11 @@ Pod::Spec.new do |s|
   s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '/System/Library/PrivateFrameworks/' }
   s.frameworks = 'Cocoa', 'MultitouchSupport'
   
-  s.source_files = 'M5MultitouchSupport/M5MultitouchSupport.h'
-  
-  s.subspec 'Public' do |ss|
-    ss.source_files = 'M5MultitouchSupport/*.h'
-    ss.exclude_files = 'M5MultitouchSupport/*Internal.h', 'M5MultitouchSupport/M5MultitouchSupport.h'
-  end
+  s.source_files = 'M5MultitouchSupport/*.h'
+  s.exclude_files = 'M5MultitouchSupport/*Internal.h'
   
   s.subspec 'Internal' do |ss|
-    ss.source_files = 'M5MultitouchSupport/*Internal.h', 'M5MultitouchSupport/*.m'
+    ss.source_files = 'M5MultitouchSupport/*.h', 'M5MultitouchSupport/*.m'
     ss.private_header_files = 'M5MultitouchSupport/*Internal.h'
   end
-  
-  s.default_subspecs = 'Public', 'Internal'
 end
