@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Cocoa Mac Multitouch Support Wrapper.xcodeproj">
+      location = "self:M5MultitouchSupport.xcodeproj">
    </FileRef>
 </Workspace>

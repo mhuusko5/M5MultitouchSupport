@@ -1,12 +1,3 @@
-Cocoa Mac Multitouch Support Wrapper
-====================================
-
-Wrapper for the MultitouchSupport.framework private Cocoa framework under Mac OS X. Drop-in solution to easily receive and respond to system-wide multitouch events in a Cocoa application.
-
-Listening to system wide multitouch events from all devices, in a Obj-C manner is now as easy as:
-
-\#import "MultitouchManager.h"
- 
-[[MultitouchManager sharedMultitouchManager] addMultitouchListenerWithTarget:self callback:@selector(doSomethingWithMultitouchEvent:) andThread:nil];
-
-Sent to the designated method is a "MultitouchEvent" with a Device ID, Frame ID, Timestamp, and array of "MultitouchTouch"s, which have a unique (per device) ID, State, normalized X and Y location (from 0 to 1), Angle, Size, X Velocity and Y Velocity.
+M5MultitouchSupport
+=====
+Easily and (thread/memory) safely consume global OSX multitouch (trackpad, Magic Mouse) events.

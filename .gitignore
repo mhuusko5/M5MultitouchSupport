@@ -1,2 +1,11 @@
+.DS_Store
 
-Cocoa Mac Multitouch Support Wrapper.xcodeproj/project.xcworkspace/xcuserdata/mhuusko.xcuserdatad/UserInterfaceState.xcuserstate
+*.xcuserstate
+*.xccheckout
+*.xcscheme
+*.xcsettings
+
+xcuserdata/
+
+Pods/
+Podfile.lock
