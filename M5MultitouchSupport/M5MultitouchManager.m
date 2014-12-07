@@ -105,7 +105,7 @@ static void mtEventHandler(MTDeviceRef mtEventDevice, MTTouch mtEventTouches[], 
     multitouchEvent.frameID = mtEventFrameId;
     multitouchEvent.timestamp = mtEventTimestamp;
     
-    [[M5MultitouchManager sharedManager] handleMultitouchEvent:multitouchEvent];
+    [M5MultitouchManager.sharedManager handleMultitouchEvent:multitouchEvent];
 }
 
 static BOOL laptopLidClosed;
