@@ -2,8 +2,8 @@
 //  M5MultitouchListener.m
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V on 12/6/14.
-//  Copyright (c) 2014 Mathew Huusko V. All rights reserved.
+//  Created by Mathew Huusko V.
+//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
 //
 
 #import "M5MultitouchListenerInternal.h"
@@ -13,15 +13,15 @@
     M5MultitouchEventCallback _callback;
     __weak id _target;
     SEL _selector;
-    NSThread *_thread;
 }
 
-#pragma mark - M5MultitouchListener Internal -
+#pragma mark - M5MultitouchListener (Internal) -
+
+#pragma mark Methods
 
 - (instancetype)init {
     if (self = [super init]) {
         _listening = YES;
-        _thread = NSThread.currentThread;
     }
     
     return self;
@@ -49,23 +49,18 @@
         return;
     }
     
-    NSThread *thread = _thread && _thread.isExecuting ? _thread : NSThread.mainThread;
-    
-    if (![thread isEqual:NSThread.currentThread]) {
-        [self performSelector:@selector(listenToEvent:) onThread:thread withObject:event waitUntilDone:NO];
-        return;
-    }
-    
     if (_callback) {
         _callback(event);
         return;
     }
     
     if (_target) {
-        [_target performSelector:_selector withObject:event];
+        ((void(*)(id, SEL, M5MultitouchEvent*))[_target methodForSelector:_selector])(_target, _selector, event);
         return;
     }
 }
+
+#pragma mark Properties
 
 - (BOOL)alive {
     return (_callback || (_target && _selector && [_target respondsToSelector:_selector]));

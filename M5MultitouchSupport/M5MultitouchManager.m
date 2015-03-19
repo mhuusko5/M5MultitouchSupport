@@ -2,61 +2,85 @@
 //  M5MultitouchManager.m
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V on 12/6/14.
-//  Copyright (c) 2014 Mathew Huusko V. All rights reserved.
+//  Created by Mathew Huusko V.
+//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
 //
 
 #import "M5MultitouchManagerInternal.h"
 
-#import <Cocoa/Cocoa.h>
 #import "M5MTDefinesInternal.h"
 #import "M5MultitouchListenerInternal.h"
 #import "M5MultitouchTouchInternal.h"
 #import "M5MultitouchEventInternal.h"
+#import <Cocoa/Cocoa.h>
 
-@implementation M5MultitouchManager {
-    @private
-    NSMutableArray *_multitouchListeners, *_multitouchDevices;
-    NSTimer *_multitouchHardwareCheckTimer;
-}
+@interface M5MultitouchManager ()
 
 #pragma mark - M5MultitouchManager -
 
+#pragma mark Properties
+
+@property (strong, readwrite) NSMutableArray *multitouchListeners;
+@property (strong, readwrite) NSMutableArray *multitouchDevices;
+@property (strong, readwrite) NSTimer *hardwareCheckTimer;
+
+#pragma mark -
+
+@end
+
+@implementation M5MultitouchManager
+
+#pragma mark - M5MultitouchManager -
+
+#pragma mark Methods
+
 - (void)removeListener:(M5MultitouchListener *)listener {
-    [_multitouchListeners removeObject:listener];
-    
-    if (!_multitouchListeners.count) {
-        [self stopHandlingMultitouchEvents];
-    }
+    dispatchSync(dispatch_get_main_queue(), ^{
+        [self.multitouchListeners removeObject:listener];
+        
+        if (!self.multitouchListeners.count) {
+            [self stopHandlingMultitouchEvents];
+        }
+    });
 }
 
 - (M5MultitouchListener *)addListenerWithCallback:(M5MultitouchEventCallback)callback {
-    if (![self.class systemSupportsMultitouch]) {
-        return nil;
-    }
+    __block M5MultitouchListener *listener = nil;
     
-    M5MultitouchListener *listener = [[M5MultitouchListener alloc] initWithCallback:callback];
-    
-    [_multitouchListeners addObject:listener];
-    
-    [self startHandlingMultitouchEvents];
+    dispatchSync(dispatch_get_main_queue(), ^{
+        if (!self.class.systemSupportsMultitouch) {
+            return;
+        }
+        
+        listener = [[M5MultitouchListener alloc] initWithCallback:callback];
+        
+        [self.multitouchListeners addObject:listener];
+        
+        [self startHandlingMultitouchEvents];
+    });
     
     return listener;
 }
 
 - (M5MultitouchListener *)addListenerWithTarget:(id)target selector:(SEL)selector {
-    if (![self.class systemSupportsMultitouch]) {
-        return nil;
-    }
+    __block M5MultitouchListener *listener = nil;
     
-    M5MultitouchListener *listener = [[M5MultitouchListener alloc] initWithTarget:target selector:selector];
-    
-    [_multitouchListeners addObject:listener];
-    
-    [self startHandlingMultitouchEvents];
+    dispatchSync(dispatch_get_main_queue(), ^{
+        if (!self.class.systemSupportsMultitouch) {
+            return;
+        }
+        
+        listener = [[M5MultitouchListener alloc] initWithTarget:target selector:selector];
+        
+        [self.multitouchListeners addObject:listener];
+        
+        [self startHandlingMultitouchEvents];
+    });
     
     return listener;
 }
+
+#pragma mark Properties
 
 + (BOOL)systemSupportsMultitouch {
     return MTDeviceIsAvailable();
@@ -75,17 +99,32 @@
 
 #pragma mark -
 
-#pragma mark - M5MultitouchManager Private -
+#pragma mark - M5MultitouchManager (Private) -
 
-- (instancetype)init {
-    if (self = [super init]) {
-        _multitouchListeners = NSMutableArray.new;
-        _multitouchDevices = NSMutableArray.new;
-        
-		[NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(restartHandlingMultitouchEvents:) name:NSWorkspaceDidWakeNotification object:nil];
+#pragma mark Methods
+
+#pragma mark Functions
+
+static void dispatchSync(dispatch_queue_t queue, dispatch_block_t block) {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (!strcmp(dispatch_queue_get_label(queue), dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL))) {
+        block();
+        return;
     }
     
-    return self;
+    dispatch_sync(queue, block);
+    #pragma clang diagnostic pop
+}
+
+static void dispatchResponse(dispatch_block_t block) {
+    static dispatch_queue_t responseQueue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        responseQueue = dispatch_queue_create("com.mhuusko5.M5MultitouchSupport", DISPATCH_QUEUE_SERIAL);;
+    });
+    
+    dispatch_sync(responseQueue, block);
 }
 
 static void mtEventHandler(MTDeviceRef mtEventDevice, MTTouch mtEventTouches[], int mtEventTouchesNum, double mtEventTimestamp, int mtEventFrameId) {
@@ -108,7 +147,7 @@ static void mtEventHandler(MTDeviceRef mtEventDevice, MTTouch mtEventTouches[], 
     [M5MultitouchManager.sharedManager handleMultitouchEvent:multitouchEvent];
 }
 
-static BOOL laptopLidClosed;
+static BOOL laptopLidClosed = NO;
 
 - (void)checkMultitouchHardware {
     CGDirectDisplayID builtInDisplay = 0;
@@ -126,15 +165,15 @@ static BOOL laptopLidClosed;
     laptopLidClosed = (builtInDisplay == 0);
     
     NSArray *mtDevices = (NSArray *)CFBridgingRelease(MTDeviceCreateList());
-    if (_multitouchDevices.count && _multitouchDevices.count != (int)mtDevices.count) {
+    if (self.multitouchDevices.count && self.multitouchDevices.count != (int)mtDevices.count) {
         [self restartHandlingMultitouchEvents:nil];
     }
 }
 
 - (void)handleMultitouchEvent:(M5MultitouchEvent *)event {
-    int listenerCount = (int)_multitouchListeners.count;
+    int listenerCount = (int)self.multitouchListeners.count;
     while (--listenerCount >= 0) {
-        M5MultitouchListener *listener = _multitouchListeners[listenerCount];
+        M5MultitouchListener *listener = self.multitouchListeners[listenerCount];
         
         if (!listener.alive) {
             [self removeListener:listener];
@@ -145,12 +184,14 @@ static BOOL laptopLidClosed;
             continue;
         }
         
-        [listener listenToEvent:event];
+        dispatchResponse(^{
+            [listener listenToEvent:event];
+        });
     }
 }
 
 - (void)startHandlingMultitouchEvents {
-    if (_multitouchDevices.count) {
+    if (self.multitouchDevices.count) {
         return;
     }
     
@@ -166,27 +207,27 @@ static BOOL laptopLidClosed;
             MTDeviceStart(mtDevice, 0);
         } @catch (NSException *exception) {}
         
-        [_multitouchDevices addObject:device];
+        [self.multitouchDevices addObject:device];
     }
     
-    _multitouchHardwareCheckTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(checkMultitouchHardware) userInfo:nil repeats:YES];
+    self.hardwareCheckTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(checkMultitouchHardware) userInfo:nil repeats:YES];
 }
 
 - (void)stopHandlingMultitouchEvents {
-    if (_multitouchHardwareCheckTimer) {
-        [_multitouchHardwareCheckTimer invalidate];
-        _multitouchHardwareCheckTimer = nil;
+    if (self.hardwareCheckTimer) {
+        [self.hardwareCheckTimer invalidate];
+        self.hardwareCheckTimer = nil;
     }
     
-    if (!_multitouchDevices.count) {
+    if (!self.multitouchDevices.count) {
         return;
     }
     
-    int deviceCount = (int)_multitouchDevices.count;
+    int deviceCount = (int)self.multitouchDevices.count;
     while (--deviceCount >= 0) {
-        id device = _multitouchDevices[deviceCount];
+        id device = self.multitouchDevices[deviceCount];
         
-        [_multitouchDevices removeObject:device];
+        [self.multitouchDevices removeObject:device];
         
         @try {
             MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
@@ -198,8 +239,27 @@ static BOOL laptopLidClosed;
 }
 
 - (void)restartHandlingMultitouchEvents:(NSNotification *)note {
-    [self stopHandlingMultitouchEvents];
-    [self startHandlingMultitouchEvents];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self stopHandlingMultitouchEvents];
+        [self startHandlingMultitouchEvents];
+    });
+}
+
+#pragma mark -
+
+#pragma mark - NSObject -
+
+#pragma mark Methods
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.multitouchListeners = NSMutableArray.new;
+        self.multitouchDevices = NSMutableArray.new;
+        
+        [NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(restartHandlingMultitouchEvents:) name:NSWorkspaceDidWakeNotification object:nil];
+    }
+    
+    return self;
 }
 
 #pragma mark -

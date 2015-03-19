@@ -2,8 +2,8 @@
 //  M5MultitouchTouchInternal.h
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V on 12/6/14.
-//  Copyright (c) 2014 Mathew Huusko V. All rights reserved.
+//  Created by Mathew Huusko V.
+//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
 //
 
 #import "M5MultitouchTouch.h"
@@ -12,7 +12,13 @@
 
 @interface M5MultitouchTouch ()
 
-#pragma mark - M5MultitouchTouch Internal -
+#pragma mark - M5MultitouchTouch (Internal) -
+
+#pragma mark Methods
+
+- (id)initWithMTTouch:(MTTouch *)touch;
+
+#pragma mark Properties
 
 @property (assign, nonatomic, readwrite) int identifier;
 @property (assign, nonatomic, readwrite) M5MultitouchTouchState state;
@@ -21,8 +27,6 @@
 @property (assign, nonatomic, readwrite) float minorAxis, majorAxis;
 @property (assign, nonatomic, readwrite) float angle;
 @property (assign, nonatomic, readwrite) float size;
-
-- (id)initWithMTTouch:(MTTouch *)touch;
 
 #pragma mark -
 

@@ -2,8 +2,8 @@
 //  M5MultitouchTouch.h
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V on 12/6/14.
-//  Copyright (c) 2014 Mathew Huusko V. All rights reserved.
+//  Created by Mathew Huusko V.
+//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -22,6 +22,8 @@ typedef NS_ENUM(NSUInteger, M5MultitouchTouchState) {
 @interface M5MultitouchTouch : NSObject
 
 #pragma mark - M5MultitouchTouch -
+
+#pragma mark Properties
 
 @property (assign, nonatomic, readonly) int identifier;
 @property (assign, nonatomic, readonly) M5MultitouchTouchState state;
