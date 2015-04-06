@@ -14,6 +14,7 @@
 
 #pragma mark Properties
 
+/** Whether listener should receive multitouch events. */
 @property (assign, readwrite) BOOL listening;
 
 #pragma mark -

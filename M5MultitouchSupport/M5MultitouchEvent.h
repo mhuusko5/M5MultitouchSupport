@@ -14,9 +14,16 @@
 
 #pragma mark Properties
 
+/** Array of M5MultitouchTouches associated with event. */
 @property (strong, nonatomic, readonly) NSArray *touches;
+
+/** Identifier of multitouch device (trackpad, Magic Mouse, etc.). Unique only per process. */
 @property (assign, nonatomic, readonly) int deviceID;
+
+/** Identifier of frame (essentially unique identifier of event). Starts at 0, increments. */
 @property (assign, nonatomic, readonly) int frameID;
+
+/** Time event was created. */
 @property (assign, nonatomic, readonly) double timestamp;
 
 #pragma mark -

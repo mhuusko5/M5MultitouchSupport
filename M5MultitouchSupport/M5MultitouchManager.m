@@ -119,6 +119,7 @@ static void dispatchSync(dispatch_queue_t queue, dispatch_block_t block) {
 
 static void dispatchResponse(dispatch_block_t block) {
     static dispatch_queue_t responseQueue = nil;
+    
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         responseQueue = dispatch_queue_create("com.mhuusko5.M5MultitouchSupport", DISPATCH_QUEUE_SERIAL);;

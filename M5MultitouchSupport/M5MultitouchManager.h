@@ -17,13 +17,21 @@
 
 #pragma mark Methods
 
+/** Removes already added listener else does nothing. */
 - (void)removeListener:(M5MultitouchListener *)listener;
+
+/** Adds/returns listener which calls (copied) block. */
 - (M5MultitouchListener *)addListenerWithCallback:(M5MultitouchEventCallback)callback;
-- (M5MultitouchListener *)addListenerWithTarget:(id)target selector:(SEL)selector; //e.g. @selector(handleMultitouchEvent:)
+
+/** Adds/returns listener which calls selector (e.g. '- (void)handleMultitouchEvent:(M5MultitouchEvent *)event;') on a (weakly held) target object. */
+- (M5MultitouchListener *)addListenerWithTarget:(id)target selector:(SEL)selector; //
 
 #pragma mark Properties
 
+/** Returns whether there are any built-in or attached multitouch devices. */
 + (BOOL)systemSupportsMultitouch;
+
+/** Returns shared instance for all use. */
 + (M5MultitouchManager *)sharedManager;
 
 #pragma mark -
