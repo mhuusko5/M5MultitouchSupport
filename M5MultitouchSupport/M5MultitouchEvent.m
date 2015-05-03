@@ -2,9 +2,6 @@
 //  M5MultitouchEvent.m
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V.
-//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
-//
 
 #import "M5MultitouchEventInternal.h"
 

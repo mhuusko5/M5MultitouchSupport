@@ -2,9 +2,6 @@
 //  M5MultitouchListener.m
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V.
-//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
-//
 
 #import "M5MultitouchListenerInternal.h"
 

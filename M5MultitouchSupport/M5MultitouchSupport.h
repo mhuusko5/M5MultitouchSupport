@@ -2,9 +2,6 @@
 //  M5MultitouchSupport.h
 //  M5MultitouchSupport
 //
-//  Created by Mathew Huusko V.
-//  Copyright (c) 2015 Mathew Huusko V. All rights reserved.
-//
 
 #import <Cocoa/Cocoa.h>
 
