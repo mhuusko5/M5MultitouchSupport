@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'M5MultitouchSupport'
-  s.version = '1.0.4'
+  s.version = '1.1.0'
   s.license = { :type => 'MIT', :file => 'LICENSE' }
   s.summary = 'Easily and (thread/memory) safely consume global OS X multitouch (trackpad, Magic Mouse) events.'
   s.homepage = 'https://github.com/mhuusko5/M5MultitouchSupport'
